@@ -1,7 +1,7 @@
 {
     "name": "sqlite3",
     "description": "Asynchronous, non-blocking SQLite3 bindings",
-    "version": "3.1.0",
+    "version": "3.1.0-1",
     "homepage": "http://github.com/mapbox/node-sqlite3",
     "author": {
         "name": "MapBox",
@@ -30,7 +30,8 @@
         "Nathan Rajlich <nathan@tootallnate.net>",
         "AJ ONeal <coolaj86@gmail.com>",
         "Mithgol",
-        "Ben Noordhuis <ben@strongloop.com>"
+        "Ben Noordhuis <ben@strongloop.com>",
+        "Simon Ruetzler <sruetzler@arigo-software.d>"
     ],
     "repository": {
         "type": "git",
