@@ -6,7 +6,7 @@ ECHO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ %~f0 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 SET PATH=%CD%;%PATH%
 SET msvs_version=2013
-IF "%msvs_toolset"=="14" SET msvs_version=2015
+IF "%msvs_toolset%"=="14" SET msvs_version=2015
 
 ECHO APPVEYOR^: %APPVEYOR%
 ECHO nodejs_version^: %nodejs_version%
@@ -34,9 +34,26 @@ ECHO downloading/installing node
 ::IF /I "%APPVEYOR%"=="True" IF /I "%msvs_toolset%"=="12" powershell Install-Product node $env:nodejs_version $env:Platform
 ::TESTING:
 ::always install (get npm matching node), but delete installed programfiles node.exe afterwards for VS2015 (using custom node.exe)
-IF /I "%APPVEYOR%"=="True" powershell Install-Product node $env:nodejs_version $env:Platform
+IF /I "%APPVEYOR%"=="True" GOTO APPVEYOR_INSTALL
+GOTO SKIP_APPVEYOR_INSTALL
+
+:APPVEYOR_INSTALL
+IF /I "%platform%"=="x64" powershell Install-Product node $env:nodejs_version x64
+IF /I "%platform%"=="x86" powershell Install-Product node $env:nodejs_version x86
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
+SET NODE_MAJOR=%nodejs_version:~0,1%
+ECHO node major version^: %NODE_MAJOR%
+IF %NODE_MAJOR% GTR 0 ECHO node version greater than zero, not updating npm && GOTO SKIP_APPVEYOR_INSTALL
+
+powershell Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+CALL npm install --global --production npm-windows-upgrade
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+CALL npm-windows-upgrade --npm-version 2.15.6 --no-dns-check --no-prompt
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
+:SKIP_APPVEYOR_INSTALL
 IF /I "%msvs_toolset%"=="12" GOTO NODE_INSTALLED
 
 
@@ -53,10 +70,17 @@ ECHO deleting node ...
 SET NODE_EXE_PRG=%ProgramFiles%\nodejs\node.exe
 IF EXIST "%NODE_EXE_PRG%" ECHO found %NODE_EXE_PRG%, deleting... && DEL /F "%NODE_EXE_PRG%"
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+IF EXIST "%ProgramFiles%\nodejs" ECHO copy custom node.exe to %ProgramFiles%\nodejs\ && COPY node.exe "%ProgramFiles%\nodejs\"
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
 SET NODE_EXE_PRG=%ProgramFiles(x86)%\nodejs\node.exe
 IF EXIST "%NODE_EXE_PRG%" ECHO found %NODE_EXE_PRG%, deleting... && DEL /F "%NODE_EXE_PRG%"
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+IF EXIST "%ProgramFiles(x86)%\nodejs" ECHO copy custom node.exe to %ProgramFiles(x86)%\nodejs\ && COPY node.exe "%ProgramFiles(x86)%\nodejs\"
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
+ECHO delete node.exe in current directory && DEL node.exe
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 :NODE_INSTALLED
 
@@ -66,7 +90,7 @@ ECHO available npm^:
 call where npm
 
 ECHO node^: && call node -v
-call node -e "console.log(process.argv,process.execPath)"
+call node -e "console.log('  - arch:',process.arch,'\n  - argv:',process.argv,'\n  - execPath:',process.execPath)"
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO npm^: && CALL npm -v
