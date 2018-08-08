@@ -1,5 +1,67 @@
 # Changelog
 
+## 4.0.2
+
+- Fixed HTTP proxy support by using `request` over `needle` in node-pre-gyp
+
+## 4.0.1
+
+- Node v10 support
+- Upgrade to node-pre-gyp@0.10.1
+- Upgrade to nan@2.10.0
+- Upgrade to sqlite v3.24.0
+- Stopped bundling node-pre-gyp
+- Upgrade to mocha@5
+- Now building electron binaries (@kewde)
+- Add OPEN_FULLMUTEX constant
+
+## 4.0.0
+
+ - Drop support for Node v0.10 and v.12
+ - Upgrade to node-pre-gyp@0.9.0
+ - Upgrade to nan@2.9.2
+
+## 3.1.13
+
+- Attempt to fix regression of #866
+
+## 3.1.12
+
+- Fixed to ensure the binaries do not rely on `GLIBC_2.14` and only `GLIBC_2.2.5`. This regressed in v3.1.11.
+
+## 3.1.11
+
+- Fixed building from source on alpine linux
+
+## 3.1.10
+
+- Removed `npm ls` from `prepublish` hook per mapbox/node-pre-gyp#291
+- Upgraded node-pre-gyp to v0.6.37
+- Removed accidentally committed large file
+
+## 3.1.9
+
+- Added support for node v8 and upgraded `nan`, `node-pre-gyp` deps.
+
+## 3.1.8
+
+- Added support for node v7 (pre-compiled binaries available)
+
+## 3.1.7
+
+- Upgrade sqlite to 3.15, enable FTS4, FTS5 (@wmertens)
+- Upgrade to node-pre-gyp@0.6.31 and nan@2.4.0
+
+## 3.1.6
+
+- Starts bundling node-pre-gyp again to avoid #720
+
+## 3.1.5
+
+- [Added support for sqlite3_interrupt](https://github.com/mapbox/node-sqlite3/pull/518): this makes
+  it possible to interrupt a long-running query.
+- [Fixes uv_ref race](https://github.com/mapbox/node-sqlite3/pull/705).
+
 ## 3.1.4
 
  - Added support for node v6
@@ -19,7 +81,7 @@
 
  - Support for node 5.x
  - Upgraded SQLite to 3.9.1: https://www.sqlite.org/releaselog/3_9_1.html
- - Enabled json1 extension by default 
+ - Enabled json1 extension by default
 
 ## 3.1.0
 
